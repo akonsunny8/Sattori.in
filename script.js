@@ -7,81 +7,80 @@ if (menuToggle && nav) {
   });
 }
 
-const audienceCopy = {
-  students:
-    "LinkedIn presence, interview narrative, resume clarity, and a confident first professional story.",
-  professionals:
-    "Career acceleration through sharper positioning, stronger visibility, and communication that earns trust before meetings begin.",
-  founders:
-    "Founder story, market trust, content authority, investor-client credibility, and premium positioning.",
-  experts:
-    "Credibility-to-visibility systems for doctors, architects, consultants, coaches, and independent experts.",
-  women:
-    "Voice ownership, authority building, confident visibility, and community-backed momentum for women-led businesses.",
-  corporates:
-    "Real-world brand, career, and communication skills for teams, campuses, leadership cohorts, and institutions.",
-};
+const heroSlides = document.querySelectorAll("[data-hero-slide]");
+const heroDots = document.querySelectorAll("[data-hero-dot]");
+let heroSlideIndex = 0;
 
-const audienceButtons = document.querySelectorAll("[data-audience]");
-const audienceDetail = document.querySelector("[data-audience-detail] h3");
+function setHeroSlide(index) {
+  if (!heroSlides.length) return;
+  heroSlideIndex = index % heroSlides.length;
+  heroSlides.forEach((slide, slideIndex) => {
+    slide.classList.toggle("active", slideIndex === heroSlideIndex);
+  });
+  heroDots.forEach((dot, dotIndex) => {
+    dot.classList.toggle("active", dotIndex === heroSlideIndex);
+  });
+}
 
-audienceButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    audienceButtons.forEach((item) => item.classList.remove("active"));
-    button.classList.add("active");
-    if (audienceDetail) {
-      audienceDetail.textContent = audienceCopy[button.dataset.audience];
+if (heroSlides.length) {
+  window.setInterval(() => {
+    setHeroSlide(heroSlideIndex + 1);
+  }, 3600);
+}
+
+const coverSlides = document.querySelectorAll("[data-cover-slide]");
+let coverSlideIndex = 0;
+
+function setCoverSlide(index) {
+  if (!coverSlides.length) return;
+  coverSlideIndex = index % coverSlides.length;
+  coverSlides.forEach((slide, slideIndex) => {
+    slide.classList.toggle("active", slideIndex === coverSlideIndex);
+  });
+}
+
+if (coverSlides.length) {
+  window.setInterval(() => {
+    setCoverSlide(coverSlideIndex + 1);
+  }, 4800);
+}
+
+document.querySelectorAll("[data-card-link]").forEach((card) => {
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("a")) return;
+    window.location.href = card.dataset.cardLink;
+  });
+
+  card.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      window.location.href = card.dataset.cardLink;
     }
   });
 });
 
-const formats = {
-  keynote: {
-    title: "60-90 mins",
-    body: "High-energy, high-impact introduction to personal branding.",
-  },
-  intensive: {
-    title: "6 hours",
-    body: "Practical, actionable, and immediately applicable.",
-  },
-  immersive: {
-    title: "Deep Dive",
-    body: "Transformation-led, with coaching, portfolio work, and brand creation.",
-  },
-};
+const revealItems = document.querySelectorAll(
+  ".reveal, main > section, .narrative-card, .program-feature-grid article, .program-detail-list p, .impact-story-track article",
+);
 
-const formatTabs = document.querySelectorAll("[data-format]");
-const formatCopy = document.querySelector("[data-format-copy]");
-
-formatTabs.forEach((tab) => {
-  tab.addEventListener("click", () => {
-    formatTabs.forEach((item) => item.classList.remove("active"));
-    tab.classList.add("active");
-    const selected = formats[tab.dataset.format];
-    if (formatCopy && selected) {
-      formatCopy.innerHTML = `<strong>${selected.title}</strong><span>${selected.body}</span>`;
-    }
-  });
-});
-
-const revealItems = document.querySelectorAll(".reveal");
+revealItems.forEach((item) => item.classList.add("smooth-reveal"));
 
 if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
+          entry.target.classList.add("is-visible", "smooth-visible");
           observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.2 },
+    { rootMargin: "0px 0px -8% 0px", threshold: 0.16 },
   );
 
   revealItems.forEach((item) => observer.observe(item));
 } else {
-  revealItems.forEach((item) => item.classList.add("is-visible"));
+  revealItems.forEach((item) => item.classList.add("is-visible", "smooth-visible"));
 }
 
 const filters = document.querySelectorAll("[data-filter]");
@@ -122,17 +121,6 @@ if (recommendations.length) {
   prevButton?.addEventListener("click", () => showRecommendation(activeRecommendation - 1));
   setInterval(() => showRecommendation(activeRecommendation + 1), 6000);
 }
-
-document.querySelectorAll("[data-newsletter]").forEach((form) => {
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const message = form.parentElement.querySelector("[data-newsletter-message]");
-    form.reset();
-    if (message) {
-      message.textContent = "Thank you for signing up. Clarity is on its way.";
-    }
-  });
-});
 
 const contactForm = document.querySelector("[data-contact-form]");
 
